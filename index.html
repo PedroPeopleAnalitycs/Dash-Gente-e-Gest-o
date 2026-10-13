@@ -1196,7 +1196,7 @@ const CHECKS = [
 ];
 function rodaChecks(){
   return CHECKS.map(c=>{
-    const rows=BASE[c.t]||[];
+    const rows=flt(BASE[c.t]||[]);          // qualidade do recorte filtrado, não da base inteira
     if(!rows.length) return {...c, qtd:null, tot:0};
     let qtd, tot=rows.length;
     if(c.dup){ const vis={}; qtd=0; rows.forEach(r=>{
@@ -1430,8 +1430,14 @@ function valoresDim(dim){
   return [...s].sort();
 }
 /** Recalcula o indicador aplicando o filtro da dimensão — garante mesma fórmula em todos os cortes. */
+/* Se o filtro do topo já fixa esta dimensão, o agrupamento não pode varrer todas
+   as categorias: ele mostraria o que o usuário acabou de filtrar fora. */
+function valoresNoFiltro(dim){
+  const vs=valoresDim(dim);
+  return F[dim] ? vs.filter(v=>String(v)===String(F[dim])) : vs;
+}
 function agrupado(id, dim, m){
-  const vs=valoresDim(dim); if(!vs.length) return {labels:[],vals:[]};
+  const vs=valoresNoFiltro(dim); if(!vs.length) return {labels:[],vals:[]};
   const orig=F[dim]; const labels=[], vals=[];
   // categorias zeradas viram barras vazias que só poluem o eixo — ficam de fora
   vs.forEach(v=>{ F[dim]=v; const r=calc(id,m); if(r!=null && r!==0){labels.push(v); vals.push(r);} });
@@ -1440,7 +1446,7 @@ function agrupado(id, dim, m){
   return {labels:ord.map(o=>o.l), vals:ord.map(o=>o.v)};
 }
 function tabelaDim(ids, dim, m){
-  const vs=valoresDim(dim); if(!vs.length) return null;
+  const vs=valoresNoFiltro(dim); if(!vs.length) return null;
   const orig=F[dim]; const rows=[];
   vs.forEach(v=>{ F[dim]=v; const cells=ids.map(id=>calc(id,m)); if(cells.some(c=>c!=null&&c!==0)) rows.push({dim:v,cells}); });
   F[dim]=orig;
@@ -2742,14 +2748,15 @@ function statusBases(){
     vagas:'Vagas (R&S)',acidentes:'Acidentes (SESMT)',horas_homem:'Horas-Homem Trabalhadas',saude_ocup:'Saúde ocupacional',
     sesmt_gestao:'Gestão SESMT (inspeções, EPI, ações)',treinamentos:'Treinamentos (T&D)',planejamento:'Planejamento de quadro'};
   const rows=Object.keys(rot).map(t=>{
-    const n=(BASE[t]||[]).length;
+    const tot=(BASE[t]||[]).length, n=flt(BASE[t]||[]).length;
     return [ '<b>'+esc(rot[t])+'</b><div class="mono">BASE.'+t+'</div>',
-      n?'<span class="chip c-ok">Carregada</span>':'<span class="chip c-nd">Não carregada</span>',
-      n?nf(n,0):null, '<span class="mono">'+esc((ESQUEMA[t]||[]).join(', '))+'</span>' ];
+      tot?'<span class="chip c-ok">Carregada</span>':'<span class="chip c-nd">Não carregada</span>',
+      tot?(n===tot?nf(tot,0):nf(n,0)+' de '+nf(tot,0)):null,
+      '<span class="mono">'+esc((ESQUEMA[t]||[]).join(', '))+'</span>' ];
   });
   const nm=Object.keys(BASE.metas||{}).length;
   rows.push(['<b>Metas corporativas</b><div class="mono">BASE.metas</div>', nm?'<span class="chip c-ok">Carregada</span>':'<span class="chip c-nd">Não carregada</span>', nm?nf(nm,0):null,'<span class="mono">indicador: valor</span>']);
-  return bloco(tabela([{l:'Base'},{l:'Status'},{l:'Registros',num:1},{l:'Campos esperados'}],rows),'Bases e campos esperados','De onde vem cada número?');
+  return bloco(tabela([{l:'Base'},{l:'Status'},{l:'Registros',num:1},{l:'Campos esperados'}],rows),'Bases e campos esperados','De onde vem cada número? A contagem respeita o filtro do topo — "x de y" mostra quanto do total entra no recorte atual.');
 }
 function tabelaChecks(){
   const c=rodaChecks();
@@ -2760,7 +2767,7 @@ function tabelaChecks(){
       pct==null?null:nf(pct,1)+'%','<span class="chip '+CLS[st]+'">'+(x.qtd==null?'Base não carregada':x.qtd===0?'Sem inconsistências':'Necessita validação')+'</span>'];
   });
   return bloco(tabela([{l:'Verificação'},{l:'Base'},{l:'Registros afetados',num:1},{l:'Total',num:1},{l:'% do total',num:1},{l:'Situação'}],rows),
-    'Verificações de consistência','Onde os dados precisam de validação?');
+    'Verificações de consistência','Onde os dados precisam de validação? As contagens seguem o filtro aplicado no topo da tela.');
 }
 function semMeta(){
   const ids=indicadoresSemMeta();
@@ -2769,7 +2776,7 @@ function semMeta(){
     'Indicadores sem meta','O que não pode ser classificado ainda?','<span class="chip c-at">'+ids.length+'</span>');
 }
 function periodosSemInfo(){
-  const ms=mesesBase(), com=mesesTrans();
+  const ms=mesesFiltrados(), com=mesesTrans().filter(m=>ms.includes(m));
   if(!ms.length) return bloco(vazio('Sem dados','Nenhum período carregado nas bases.'),'Períodos sem informação','Há lacunas no histórico?');
   const ini=ms[0], fim=ms[ms.length-1];
   const rows=ms.filter(k=>!com.includes(k)).map(k=>[esc(dBR(k)),'<span class="chip c-cr">Sem informação nas bases mensais</span>']);
