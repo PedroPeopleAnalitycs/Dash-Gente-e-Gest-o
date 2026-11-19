@@ -17,6 +17,32 @@
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--tx);line-height:1.5;font-size:14px}
+@keyframes pageEnter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@keyframes cardEnter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fillBar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes targetIn{from{opacity:0;transform:translateY(-50%) scaleY(.15)}to{opacity:1;transform:translateY(-50%) scaleY(1)}}
+@keyframes alertPulse{0%,100%{box-shadow:0 0 0 rgba(193,54,47,0)}45%{box-shadow:0 0 0 3px rgba(193,54,47,.09)}}
+@keyframes drillOut{from{opacity:1;clip-path:inset(0 0 0 0)}to{opacity:0;transform:translateY(-7px);clip-path:inset(0 0 100% 0)}}
+@keyframes rowEnter{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.page.active{animation:pageEnter .28s ease-out both}
+.kpis .kpi{animation:cardEnter .34s ease-out both}
+.prio{animation:cardEnter .32s ease-out both}
+.prio.a-cr{animation:cardEnter .32s ease-out both, alertPulse 1.2s ease-out .35s 1}
+.bul-bar i{transform:scaleX(0);transform-origin:left center;animation:fillBar .75s cubic-bezier(.2,.7,.2,1) .12s both}
+.bul-bar b{transform-origin:center;animation:targetIn .42s ease-out .25s both}
+.drill.saindo{animation:drillOut .2s ease-in both}
+.drill .drill-h{animation:cardEnter .24s ease-out both}
+table.t tbody tr{animation:rowEnter .3s ease-out both}
+table.t tbody tr:nth-child(1){animation-delay:.02s} table.t tbody tr:nth-child(2){animation-delay:.05s}
+table.t tbody tr:nth-child(3){animation-delay:.08s} table.t tbody tr:nth-child(4){animation-delay:.11s}
+table.t tbody tr:nth-child(5){animation-delay:.14s} table.t tbody tr:nth-child(6){animation-delay:.17s}
+table.t tbody tr:nth-child(7){animation-delay:.2s}  table.t tbody tr:nth-child(8){animation-delay:.22s}
+table.t tbody tr:nth-child(n+9){animation-delay:.24s}
+/* Movimento reduzido: tudo pronto na hora, sem perder função. */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;
+    animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
 
 /* ===== MENU LATERAL ===== */
 .sidebar{position:fixed;top:0;left:0;width:var(--sb);height:100vh;background:var(--nav);display:flex;flex-direction:column;z-index:60}
@@ -48,6 +74,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-s
 .btn.on{background:#EEF4FD;border-color:var(--c1);color:var(--c1)}
 
 /* ===== FILTROS ===== */
+#topo{position:sticky;top:0;z-index:40;background:var(--bg);box-shadow:0 1px 0 var(--line)}
+.filters.flutua.open{position:fixed;top:12px;left:50%;transform:translateX(-50%);
+  width:min(1180px,calc(100vw - 32px));max-height:82vh;overflow:auto;z-index:60;
+  box-shadow:0 18px 48px rgba(22,33,58,.26);border-radius:10px}
+#velaF{display:none;position:fixed;inset:0;background:rgba(22,33,58,.28);z-index:55}
+#velaF.on{display:block}
 .filters{background:var(--card);border-bottom:1px solid var(--line);padding:0 24px;overflow:hidden;max-height:0;transition:max-height .18s ease,padding .18s}
 .filters.open{max-height:420px;padding:14px 24px 16px}
 .f-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px}
@@ -68,6 +100,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-s
 
 /* ===== CARDS KPI ===== */
 .kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:var(--gap)}
+
+.kpis .kpi{animation:cardEnter .34s ease-out both}
+.prio{animation:cardEnter .32s ease-out both}
+.prio.a-cr{animation:cardEnter .32s ease-out both, alertPulse 1.2s ease-out .35s 1}
+.bul-bar i{transform:scaleX(0);transform-origin:left center;animation:fillBar .75s cubic-bezier(.2,.7,.2,1) .12s both}
+.bul-bar b{transform-origin:center;animation:targetIn .42s ease-out .25s both}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;position:relative;border-top:3px solid var(--nd);cursor:pointer;transition:box-shadow .12s,border-color .12s}
 .kpi:hover{box-shadow:0 3px 12px rgba(22,33,58,.10)}
 .kpi.aberto{box-shadow:0 3px 14px rgba(43,105,196,.18);border-color:var(--c1)}
@@ -86,18 +124,42 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-s
 body.exec .so-analitico{display:none}
 .atu{display:flex;gap:14px;flex-wrap:wrap;font-size:10.5px;color:var(--tx-3)}
 .atu b{color:var(--tx-2);font-weight:600}
-.prio{display:flex;gap:11px;padding:11px 13px;border-radius:6px;border:1px solid var(--line);background:#fff;border-left:4px solid var(--nd);margin-bottom:8px;cursor:pointer}
+.p-resumo{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.p-chip{display:flex;align-items:baseline;gap:7px;padding:9px 14px;border-radius:8px;border:1px solid var(--line);background:#fff;border-left:5px solid var(--nd)}
+.p-chip b{font-size:22px;line-height:1;font-weight:800}
+.p-chip span{font-size:10.5px;letter-spacing:.04em;color:var(--tx-2)}
+.p-chip.a-cr{border-left-color:var(--cr)} .p-chip.a-de{border-left-color:var(--de)}
+.p-chip.a-at{border-left-color:var(--at)} .p-chip.a-op{border-left-color:var(--c1)}
+.p-chip.a-ok{border-left-color:var(--ok)}
+.p-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:10px}
+.prio{position:relative;display:flex;align-items:center;gap:14px;padding:14px 16px 14px 18px;border-radius:9px;border:1px solid var(--line);background:#fff;cursor:pointer;overflow:hidden;transition:box-shadow .15s,transform .15s}
+.prio:hover{transform:translateY(-1px)}
+.p-faixa{position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--nd)}
+.prio.a-cr .p-faixa{background:var(--cr)} .prio.a-de .p-faixa{background:var(--de)}
+.prio.a-at .p-faixa{background:var(--at)} .prio.a-op .p-faixa{background:var(--c1)}
+.prio.a-ok .p-faixa{background:var(--ok)}
+.p-num{font-size:25px;font-weight:800;line-height:1;min-width:92px;letter-spacing:-.02em}
+.prio.a-cr .p-num{color:var(--cr)} .prio.a-de .p-num{color:var(--de)}
+.prio.a-at .p-num{color:var(--at)} .prio.a-ok .p-num{color:var(--ok)}
+.p-lado{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+.p-seta{font-size:10.5px;color:var(--tx-3)}
 .prio:hover{box-shadow:0 2px 10px rgba(22,33,58,.09)}
 .prio.a-cr{border-left-color:var(--cr);background:#FDF7F6}
 .prio.a-de{border-left-color:var(--de);background:#FEFAF6}
 .prio.a-at{border-left-color:var(--at);background:#FEFCF6}
 .prio.a-op{border-left-color:var(--c1);background:#F7FAFE}
 .prio.a-ok{border-left-color:var(--ok);background:#F7FCF9}
-.prio .p-t{font-weight:700;font-size:12.5px;margin-bottom:2px}
+.prio .p-t{font-weight:700;font-size:13.5px;margin-bottom:3px;line-height:1.3}
 .prio .p-d{font-size:11.5px;color:var(--tx-2);line-height:1.45}
 .prio .p-m{font-size:10.5px;color:var(--tx-3);margin-top:3px}
 table.t td,table.t th{white-space:nowrap}
 table.t tr.emb>td{white-space:normal;border-top:0}
+table.t tbody tr{animation:rowEnter .3s ease-out both}
+table.t tbody tr:nth-child(1){animation-delay:.02s} table.t tbody tr:nth-child(2){animation-delay:.05s}
+table.t tbody tr:nth-child(3){animation-delay:.08s} table.t tbody tr:nth-child(4){animation-delay:.11s}
+table.t tbody tr:nth-child(5){animation-delay:.14s} table.t tbody tr:nth-child(6){animation-delay:.17s}
+table.t tbody tr:nth-child(7){animation-delay:.2s}  table.t tbody tr:nth-child(8){animation-delay:.22s}
+table.t tbody tr:nth-child(n+9){animation-delay:.24s}
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table.t thead th.ord{cursor:pointer;user-select:none}
 table.t thead th.ord:hover{color:var(--c1)}
@@ -107,7 +169,9 @@ table.t thead th.ord.desc::after{content:' ▼';opacity:1;color:var(--c1)}
 .kpi .lupa{position:absolute;bottom:10px;right:11px;font-size:10px;color:var(--tx-3);letter-spacing:.3px}
 .kpi.aberto .lupa{color:var(--c1);font-weight:700}
 .drill{margin-top:var(--gap);background:var(--card);border:1px solid var(--c1);border-radius:var(--r);padding:15px 17px;display:none}
-.drill.on{display:block}
+.drill.on{display:block;animation:drillIn .3s cubic-bezier(.2,.7,.2,1) both}
+.drill.saindo{animation:drillOut .2s ease-in both}
+.drill .drill-h{animation:cardEnter .24s ease-out both}
 .drill-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:11px}
 .drill-h h4{font-size:13.5px;font-weight:700}
 .drill-h .sub{font-size:11.5px;color:var(--tx-3);margin-top:2px}
@@ -237,9 +301,11 @@ table.t td.num,table.t th.num{text-align:center;font-variant-numeric:tabular-num
     </div>
   </div>
 
-  <div class="filters" id="filtros">
+  <div id="velaF" onclick="toggleFiltros()"></div>
+  <div class="filters flutua" id="filtros">
     <div class="f-grid" id="fGrid"></div>
     <div class="f-tags" id="fTags"></div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:6px"><button class="lnk" onclick="toggleFiltros()">fechar ✕</button></div>
     <div class="f-note">
       <span>ℹ️</span>
       <span>Os filtros são populados automaticamente a partir dos campos existentes na base. Campos ausentes permanecem desabilitados. Filtros de <b>sexo</b> e <b>faixa etária</b> só são habilitados quando os dados estiverem disponíveis e o uso for autorizado (ver Segurança e Confidencialidade).</span>
@@ -497,6 +563,7 @@ const DICIONARIO = {
   tempo_empresa: ind('Tempo Médio de Empresa','Antiguidade média do quadro ativo.','Média de (data de referência − data de admissão)','anos',S_NEUTRO,'Mensal','Base de RH','RH'),
 
   /* ---------- RECRUTAMENTO ---------- */
+  vagas_aprovacao: ind('Vagas em Aprovação','Processos aguardando aprovação para seguir.','Contagem de vagas com status Em aprovação','vagas',S_NEUTRO,'Mensal','Base de R&S','RH','Separadas das vagas em andamento: o processo seletivo está parado esperando decisão, não triagem.'),
   vagas_abertas: ind('Vagas Abertas','Posições registradas com status Aberta, sem processo iniciado.','Contagem de vagas com status aberto','vagas',S_NEUTRO,'Contínuo + fechamento mensal','Base de R&S','RH'),
   vagas_em_aberto: ind('Vagas em Aberto','Vagas ainda não preenchidas: soma das abertas e das em andamento.','Contagem de vagas cujo status não é Fechada nem Cancelada','vagas',S_NEUTRO,'Contínuo','Base de R&S','RH','É o número de posições que o time de R&S ainda precisa entregar. Quando a base só distingue "em processo", todas caem aqui e "Vagas Abertas" fica zerada.'),
   vagas_fechadas: ind('Vagas Fechadas','Posições preenchidas no período.','Contagem de vagas com data de fechamento no período','vagas',S_NEUTRO,'Mensal','Base de R&S','RH'),
@@ -954,12 +1021,14 @@ function calc(id, m){
     /* A planilha HEADCOUNT & CUSTOS é a fonte oficial do quadro: cada linha de
        folha declara o headcount da área no mês, para CLT e para PJ. A base de
        pessoas serve para movimentação, turnover e as listas nominais. */
-    case 'headcount':      { if(temDados('folha')) return soma(fol(),'headcount')||null;
+    /* A planilha de folha não distingue aprendiz e estágio; com esse filtro
+       ativo, o quadro vem do cadastro de pessoas, que distingue. */
+    case 'headcount':      { if(temDados('folha') && !F.tipo_contrato) return soma(fol(),'headcount')||null;
                              return ativosEm(m?fimMes(m):new Date()); }
-    case 'headcount_clt':  { if(temDados('folha'))
+    case 'headcount_clt':  { if(temDados('folha') && !F.tipo_contrato)
                                return soma(fol().filter(r=>/^clt$/i.test(String(r.contrato||'').trim())),'headcount')||null;
                              return ativosEm(m?fimMes(m):new Date(), ehCLT); }
-    case 'headcount_pj':   { if(temDados('folha'))
+    case 'headcount_pj':   { if(temDados('folha') && !F.tipo_contrato)
                                return soma(fol().filter(r=>/^pj$/i.test(String(r.contrato||'').trim())),'headcount')||null;
                              const v=ativosEm(m?fimMes(m):new Date(), ehPJ);
                              if(v) return v;
@@ -1007,6 +1076,7 @@ function calc(id, m){
                                 .map(c=>(hoje-pd(c.admissao))/31557600000);
                              return t.length?mean(t):null; }
 
+    case 'vagas_aprovacao':  return temDados('vagas') ? vgs().filter(v=>/aprovac|aprovaç/i.test(v.status||'')).length||null : null;
     case 'vagas_abertas':    return temDados('vagas') ? vgs().filter(v=>/aberta/i.test(v.status||'')).length : null;
     case 'vagas_em_aberto':  { const v=vgs(); if(!v.length) return null;
                                return v.filter(x=>!/fechad|cancel/i.test(x.status||'')).length; }
@@ -1020,7 +1090,7 @@ function calc(id, m){
                                   daquele mês; sem filtro, vale o estoque atual. */
                                /* "Aberta" tem card próprio: aqui contam só as
                                   vagas em processo de seleção. */
-                               const emProc = v=>!encerrada(v) && !/aberta/i.test(String(v.status||''));
+                               const emProc = v=>!encerrada(v) && !/aberta|aprovac|aprovaç/i.test(String(v.status||''));
                                const alvo = mExp || ((F.ini && F.fim && F.ini===F.fim) ? F.ini : null);
                                if(!alvo) return vgsTudo().filter(emProc).length||null;
                                const fim = fimMes(alvo);
@@ -1493,11 +1563,11 @@ function gerarAlertas(){
     const d=DICIONARIO[id]; const v=calc(id); if(v==null) return;
     const st=statusOf(id,v), dl=delta(id), t=tendencia(id), mt=(BASE.metas||{})[id];
     const nome=d.nome, val=fmt(v,id);
-    if(st==='cr') out.push({id,n:'cr',t:nome+' fora do esperado',d:'Resultado de '+val+' contra meta de '+fmt(Number(mt),id)+' no mês de referência ('+mesRef()+').'});
-    else if(st==='at') out.push({id,n:'at',t:nome+' perto do limite',d:'Resultado de '+val+' acima da tolerância definida sobre a meta de '+fmt(Number(mt),id)+'.'});
+    if(st==='cr') out.push({id,valor:calc(id),n:'cr',t:nome+' fora do esperado',d:'Resultado de '+val+' contra meta de '+fmt(Number(mt),id)+' no mês de referência ('+mesRef()+').'});
+    else if(st==='at') out.push({id,valor:calc(id),n:'at',t:nome+' perto do limite',d:'Resultado de '+val+' acima da tolerância definida sobre a meta de '+fmt(Number(mt),id)+'.'});
     if(dl && Math.abs(dl.pct)>=PARAM.deltaDeterioracao*100){
       const piorou = d.sentido===S_MENOR ? dl.pct>0 : d.sentido===S_MAIOR ? dl.pct<0 : null;
-      if(piorou===true) out.push({id,n:'de',t:nome+' piorou em relação ao mês anterior',d:nome+' variou '+nf(dl.pct,1)+'% em relação ao mês anterior ('+fmt(dl.ant,id)+' → '+val+').'});
+      if(piorou===true) out.push({id,valor:calc(id),n:'de',t:nome+' piorou em relação ao mês anterior',d:nome+' variou '+nf(dl.pct,1)+'% em relação ao mês anterior ('+fmt(dl.ant,id)+' → '+val+').'});
       if(piorou===false) out.push({id,n:'ok',t:nome+' melhorou',d:nome+' variou '+nf(dl.pct,1)+'% em relação ao mês anterior ('+fmt(dl.ant,id)+' → '+val+').'});
     }
     if(t.ok && t.dir!=='estável'){
@@ -1505,7 +1575,7 @@ function gerarAlertas(){
       // evita mensagens contraditórias: se a variação do último mês já apontou o sentido oposto,
       // a leitura de curto prazo prevalece e a de tendência é anexada a ela, não emitida em separado.
       const jaMelhorou = out.some(o=>o.n==='ok'&&o.t.indexOf(nome)===0);
-      if(ruim && !jaMelhorou) out.push({id,n:'at',t:nome+' com tendência de piora',d:t.txt+' Média dos últimos 3 períodos: '+fmt(t.media3,id)+'.'});
+      if(ruim && !jaMelhorou) out.push({id,valor:calc(id),n:'at',t:nome+' com tendência de piora',d:t.txt+' Média dos últimos 3 períodos: '+fmt(t.media3,id)+'.'});
       if(ruim && jaMelhorou){ const o=out.find(o=>o.n==='ok'&&o.t.indexOf(nome)===0);
         o.d+=' Ainda assim, a série de '+serie(id).vals.filter(x=>x!=null).length+' períodos segue '+t.dir+' — a melhora do mês não reverteu a tendência.'; }
     }
@@ -1519,7 +1589,7 @@ function gerarAlertas(){
 function alertasOperacionais(){
   const out=[]; const hoje=new Date();
   const dias=(a,b)=>{const x=pd(a),y=pd(b); return (x&&y)?Math.round((y-x)/864e5):null};
-  const add=(n,t,d,m,ir)=>out.push({n,t,d,m,ir});
+  const add=(n,t,d,m,ir,id)=>out.push({n,t,d,m,ir,id,valor:(id?calc(id):null)});
   // --- Recrutamento ---
   if(temDados('vagas')){
     const v=flt(BASE.vagas), abertas=v.filter(x=>!/fechad|cancel/i.test(x.status||''));
@@ -1554,7 +1624,7 @@ function alertasOperacionais(){
   // --- DP ---
   const sobe=(id,lim,pag,txt)=>{ const dl=delta(id); if(dl&&dl.pct>=lim)
     add('de','Aumento de '+DICIONARIO[id].nome.toLowerCase(), txt+' Variação de '+nf(dl.pct,1)+'% em relação ao mês anterior ('+fmt(dl.ant,id)+' → '+fmt(calc(id),id)+').',
-        'Gatilho operacional: variação acima de '+lim+'% mês a mês.',pag); };
+        'Gatilho operacional: variação acima de '+lim+'% mês a mês.',pag,id); };
   sobe('horas_extras',LIMITES.altaHorasExtrasPct,'dp','Volume de horas extras cresceu acima do gatilho de acompanhamento.');
   sobe('absenteismo',LIMITES.altaAbsenteismoPct,'dp','A taxa de ausência subiu acima do gatilho de acompanhamento.');
   const rei=calc('reincidencia_erros');
@@ -1671,7 +1741,8 @@ function cardKPI(id, opt){
   return '<div class="kpi s-'+(st==='sm'?'nd':st)+(parcial?' parcial':'')+'" data-ind="'+id+'">'
     +'<div class="kpi-l">'+esc(d.nome)+'<i class="info">i</i></div>'
     +(v==null?'<div class="kpi-v nd">Sem dados</div>'
-             :'<div class="kpi-v">'+fmt(v,id)+' <span style="font-size:12px;font-weight:600;color:var(--tx-3)">'+esc(unidCurta(id))+'</span></div>')
+             :'<div class="kpi-v"><span class="kpi-num" data-indicator="'+id+'" data-value="'+v+'">'+fmt(v,id)+'</span>'
+              +' <span style="font-size:12px;font-weight:600;color:var(--tx-3)">'+esc(unidCurta(id))+'</span></div>')
     +'<div class="kpi-badge chip '+CLS[st]+'">'+ROT[st]+'</div>'
     +'<div class="kpi-f">'+variacao(id)+'</div>'
     + bullet(id)
@@ -1722,6 +1793,12 @@ const ROTULOS = {
 if(typeof Chart!=='undefined' && Chart.register) Chart.register(ROTULOS);
 
 const cortaRot = t => { t=String(t==null?'':t).toUpperCase(); return t.length>22 ? t.slice(0,21)+'…' : t; };
+/* Entrada sequencial: cada ponto ou barra entra logo após o anterior, em vez
+   de tudo aparecer junto. A linha é desenhada da esquerda para a direita. */
+const ANIM_SEQ = {
+  animation:{ duration:650, easing:'easeOutCubic',
+    delay: c => (c.type==='data' && c.mode==='default') ? c.dataIndex*45 + c.datasetIndex*80 : 0 }
+};
 function opts(fmtId, legenda, extra){
   const o={responsive:true,maintainAspectRatio:false,animation:false,interaction:{mode:'index',intersect:false},
     layout:{padding:{top:26,right:8}},
@@ -1743,7 +1820,7 @@ function chartLine(labels, series, fmtId){
   FILA.push({cid, cfg:{type:'line', data:{labels, datasets:series.map((s,i)=>({label:s.nome,data:s.vals,
       borderColor:COR[i%6],backgroundColor:COR[i%6]+'18',borderWidth:2.5,tension:.25,
       pointRadius:3,pointHoverRadius:5,pointBackgroundColor:COR[i%6],fill:series.length===1,spanGaps:true}))},
-    options:opts(fmtId, series.length>1)}});
+    options:Object.assign({}, ANIM_SEQ, opts(fmtId, series.length>1))}});
   return '<div class="chart"><canvas id="'+cid+'"></canvas></div>';
 }
 /* LINHA COM DOIS EIXOS — duas grandezas de escala diferente na mesma linha do tempo. */
@@ -1785,7 +1862,7 @@ function chartBar(labels, vals, rot, fmtId){
   const cid='ch'+(++SEQ), LIM=12, corte=labels.length>LIM;
   FILA.push({cid, cfg:{type:'bar', data:{labels:labels.slice(0,LIM), datasets:[{label:rot,data:vals.slice(0,LIM),
       backgroundColor:COR[0]+'CC',borderColor:COR[0],borderWidth:1,borderRadius:4,maxBarThickness:64}]},
-    options:opts(fmtId,false)}});
+    options:Object.assign({}, ANIM_SEQ, opts(fmtId,false))}});
   return '<div class="chart"><canvas id="'+cid+'"></canvas></div>'
     + (corte?'<div class="mais">Exibindo os '+LIM+' maiores de '+labels.length+'.</div>':'');
 }
@@ -1796,7 +1873,7 @@ function chartBarGrupo(labels, series, fmtId){
   const cid='ch'+(++SEQ);
   FILA.push({cid, cfg:{type:'bar', data:{labels, datasets:series.map((s,i)=>({label:s.nome,data:s.vals,
       backgroundColor:COR[i%6]+'CC',borderColor:COR[i%6],borderWidth:1,borderRadius:3,maxBarThickness:46}))},
-    options:opts(fmtId, true)}});
+    options:Object.assign({}, opts(fmtId, true), ANIM_SEQ)}});
   return '<div class="chart"><canvas id="'+cid+'"></canvas></div>';
 }
 /* BARRA EMPILHADA — composição ao longo do tempo. */
@@ -1915,13 +1992,40 @@ function listaPrioridades(lim){
   const a=prioridades();
   if(!a.length) return vazio('Nada a sinalizar','Os pontos de atenção dependem de dados reais, metas registradas ou regras operacionais acionadas. Nada foi inferido.');
   const rot={cr:'Atenção alta',de:'Piorou no mês',at:'Acompanhar',op:'Operacional',ok:'Evoluindo bem'};
-  return a.slice(0,lim).map(x=>
-    '<div class="prio a-'+x.n+'"'+(x.ir?' onclick="irDetalhe(\''+x.ir+'\',\''+(x.id||'')+'\')"':'')+'>'
-    +'<div style="flex:1"><div class="p-t">'+rot[x.n]+' · '+esc(x.t)+'</div>'
-    +'<div class="p-d">'+esc(x.d)+'</div>'
-    +(x.m?'<div class="p-m">'+esc(x.m)+'</div>':'')+'</div>'
-    +(x.ir?'<span style="color:var(--tx-3);font-size:14px">›</span>':'')+'</div>').join('')
-    + (a.length>lim?'<div style="font-size:11.5px;color:var(--tx-3);margin-top:8px">+ '+(a.length-lim)+' em Alertas &amp; Análises.</div>':'');
+  const ordem={cr:0,de:1,at:2,op:3,ok:4};
+  /* Um indicador, um cartão: meta estourada, piora no mês e tendência falam do
+     mesmo problema. Fica o mais grave, com os demais recolhidos na linha de apoio. */
+  const porInd={}; const unicos=[];
+  a.slice().sort((x,y)=>(ordem[x.n]??9)-(ordem[y.n]??9)).forEach(x=>{
+    if(!x.id){ unicos.push(x); return; }
+    if(porInd[x.id]){ porInd[x.id].extras=(porInd[x.id].extras||[]).concat(x.t); return; }
+    porInd[x.id]=Object.assign({},x); unicos.push(porInd[x.id]);
+  });
+  const lista=unicos.slice(0,lim);
+  /* Resumo por gravidade, para a diretoria ver o tamanho do problema antes de ler item a item. */
+  const cont={}; unicos.forEach(x=>cont[x.n]=(cont[x.n]||0)+1);
+  const resumo='<div class="p-resumo">'
+    + ['cr','de','at','op','ok'].filter(k=>cont[k]).map(k=>
+        '<div class="p-chip a-'+k+'"><b>'+cont[k]+'</b><span>'+rot[k]+'</span></div>').join('')
+    + '</div>';
+
+  const cards=lista.map(x=>{
+    /* O número em destaque é o que a diretoria precisa ver primeiro. */
+    const val = x.valor!=null && x.id ? fmt(x.valor,x.id) : null;
+    return '<div class="prio a-'+x.n+'"'+(x.ir?' onclick="irDetalhe(\''+x.ir+'\',\''+(x.id||'')+'\')"':'')+'>'
+      +'<div class="p-faixa"></div>'
+      +(val?'<div class="p-num">'+val+'</div>':'')
+      +'<div style="flex:1;min-width:0">'
+      +'<div class="p-t">'+esc(x.t)+'</div>'
+      +'<div class="p-d">'+esc(x.d)+'</div>'
+      +(x.m?'<div class="p-m">'+esc(x.m)+'</div>':'')
+      +((x.extras&&x.extras.length)?'<div class="p-m">Também sinalizado como: '+esc(x.extras.join(' · '))+'</div>':'')
+      +'</div>'
+      +'<div class="p-lado"><span class="chip '+({cr:'c-cr',de:'c-at',at:'c-at',op:'c-nd',ok:'c-ok'}[x.n])+'">'+rot[x.n]+'</span>'
+      +(x.ir?'<span class="p-seta">abrir ›</span>':'')+'</div></div>';
+  }).join('');
+  return resumo + '<div class="p-grade">'+cards+'</div>'
+    + (unicos.length>lim?'<div style="font-size:11.5px;color:var(--tx-3);margin-top:10px">+ '+(unicos.length-lim)+' em Alertas &amp; Análises.</div>':'');
 }
 function irDetalhe(pag, id){
   irPara(pag);
@@ -2379,6 +2483,7 @@ const COLS_FIXAS = {
   vagas_total:        ['vagas_total'],
   vagas_andamento:    ['vagas_andamento'],
   vagas_abertas:      ['vagas_abertas'],
+  vagas_aprovacao:    ['vagas_aprovacao'],
   vagas_fechadas:     ['vagas_fechadas'],
   vagas_canceladas:   ['vagas_canceladas'],
   time_to_fill:       ['time_to_fill'],
@@ -2392,7 +2497,7 @@ const COM_PROGRESSAO = ['headcount_clt','headcount_pj','custo_total_fp','custo_c
   'cme','cme_clt','cme_pj','absenteismo','horas_extras','custo_he','turnover','turnover_vol','turnover_invol',
   'retencao','admissoes','desligamentos','horas_perdidas','dias_ausencia','horas_atestado','dias_atestado',
   'atestados_qtd','atestados_lancados','afastamentos','afastamentos_lancados','acidentes','dias_perdidos','horas_trein','vagas_andamento','vagas_total',
-  'vagas_fechadas','vagas_canceladas','time_to_fill','vagas_substituicao','vagas_aumento'];
+  'vagas_fechadas','vagas_canceladas','time_to_fill','vagas_substituicao','vagas_aumento','vagas_abertas','vagas_aprovacao'];
 /* Evolução mês a mês do próprio indicador, exibida dentro do detalhamento. */
 function graficoDoCard(id){
   const ms=mesesFiltrados();
@@ -2774,7 +2879,8 @@ const ESCOPO = {
   /* Mesma régua do card: a vaga estava aberta no fim do mês de referência.
      Antes a lista filtrava pelo texto do status e deixava de fora as que vêm
      marcadas como "Aberta", divergindo do número exibido. */
-  vagas_andamento:   {f:v=>!encerrada(v) && !/aberta/i.test(String(v.status||'')), txt:'somente vagas em processo de seleção'},
+  vagas_andamento:   {f:v=>!encerrada(v) && !/aberta|aprovac|aprovaç/i.test(String(v.status||'')), txt:'somente vagas em processo de seleção'},
+  vagas_aprovacao:   {f:v=>/aprovac|aprovaç/i.test(String(v.status||'')), txt:'somente vagas aguardando aprovação'},
   vagas_abertas:     {f:v=>/aberta/i.test(String(v.status||'')), txt:'somente vagas com status Aberta'},
   vagas_em_aberto:   {f:v=>!encerrada(v), txt:'somente vagas ainda não preenchidas'},
   vagas_fechadas:    {f:v=>!!v.fechamento && !/cancel|declin/i.test(String(v.status||'')), txt:'somente vagas já preenchidas no período'},
@@ -2997,7 +3103,7 @@ function detalheHTML(id, dim){
 /* Indicadores de recrutamento: o detalhamento é padronizado em dois níveis —
    QTD POR UNIDADE e, ao clicar na unidade, o DETALHAMENTO DOS DADOS daquela
    unidade, vaga a vaga. */
-const IDS_VAGA=['custo_substituicao','custo_aumento','vagas_total','vagas_abertas','vagas_em_aberto','vagas_andamento','vagas_fechadas',
+const IDS_VAGA=['vagas_aprovacao','custo_substituicao','custo_aumento','vagas_total','vagas_abertas','vagas_em_aberto','vagas_andamento','vagas_fechadas',
   'vagas_canceladas','taxa_cancelamento','vagas_substituicao','vagas_aumento','pct_aumento_quadro',
   'vagas_acima_sla','dias_medio_aberto','time_to_fill','time_to_hire','tempo_1contato','candidatos_vaga',
   'entrevistados','taxa_conversao','custo_contratacao','custo_vaga','remuneracao_media','pct_recrut_interno',
@@ -3057,25 +3163,63 @@ let NOMINAL=null;   // {dim, valor}
 function verPessoas(dim, valor){ NOMINAL={dim, valor}; render(); }
 function limparNominal(){ NOMINAL=null; render(); }
 let ABERTO=null, DRILL_DIM=null;
-function fecharDetalhe(){
+/* ==========================================================================
+   CICLO DE VIDA DO DETALHAMENTO
+   O fechamento é animado, e a limpeza acontece no fim da animação. Se outro
+   detalhamento for aberto antes disso, o timer anterior é cancelado para não
+   apagar o conteúdo novo. Cada painel carrega o selo da operação que o criou;
+   uma limpeza só age se o selo ainda for o dela.
+   ========================================================================== */
+let SELO_DRILL=0;
+const TIMERS_DRILL=new Map();
+function cancelarTimer(box){
+  const t=TIMERS_DRILL.get(box);
+  if(t){ clearTimeout(t); TIMERS_DRILL.delete(box); }
+}
+function limparPainel(box, selo){
+  cancelarTimer(box);
+  if(selo!==undefined && box.dataset.selo !== String(selo)) return;  // já é outro conteúdo
+  box.classList.remove('on','saindo'); box.innerHTML=''; delete box.dataset.selo;
+}
+function destruirGraficosDe(box){
+  box.querySelectorAll('canvas').forEach(c=>{
+    const ch=CHARTS[c.id];
+    if(ch){ try{ ch.destroy(); }catch(e){} delete CHARTS[c.id]; }
+  });
+}
+function fecharDetalhe(imediato){
   DRILL_DIM=null; NOMINAL=null; ABERTAS={}; VISAO_CONTRATO='TOTAL';
   TRILHA.forEach(t=>{ if(t.dim!=='colaborador') F[t.dim]=''; }); TRILHA=[]; tags();
-  document.querySelectorAll('.drill.on').forEach(x=>{x.classList.remove('on');x.innerHTML='';});
+  document.querySelectorAll('.drill.on').forEach(box=>{
+    destruirGraficosDe(box);
+    cancelarTimer(box);
+    const selo=box.dataset.selo;
+    if(imediato || semMovimento()){ limparPainel(box, selo); return; }
+    box.classList.add('saindo');
+    TIMERS_DRILL.set(box, setTimeout(()=>limparPainel(box, selo), 200));
+  });
   document.querySelectorAll('.kpi.aberto').forEach(x=>x.classList.remove('aberto'));
   ABERTO=null;
 }
+const semMovimento = () => !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 function abrirDetalhe(id, card, dim){
   card = card || document.querySelector('.kpi[data-ind="'+id+'"]');
   if(!card) return;
   const grid=card.closest('.kpis'); const box=document.getElementById(grid.dataset.dw);
   if(ABERTO===id && !dim){ fecharDetalhe(); return; }
-  fecharDetalhe();
+  fecharDetalhe(true);                 // troca de card não espera animação de saída
+  cancelarTimer(box);
+  const selo=++SELO_DRILL;
   DRILL_DIM=dim||null;
   FILA=[];
-  box.innerHTML=detalheHTML(id, dim); box.classList.add('on');
+  destruirGraficosDe(box);
+  box.dataset.selo=String(selo);
+  box.classList.remove('saindo');
+  box.innerHTML=detalheHTML(id, dim);
+  box.classList.add('on');
   card.classList.add('aberto'); ABERTO=id;
   montarGraficos();
-  if(!dim) box.scrollIntoView({behavior:'smooth', block:'nearest'});
+  if(!dim && !semMovimento()) box.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
 /* ==========================================================================
@@ -3133,7 +3277,7 @@ const PAGINAS = [
 { id:'recrut', ic:'◎', grupo:null, tit:'Recrutamento', perg:'Quantas vagas temos, onde estão travadas e quanto custam?',
   render(){
     return sec('Volume e status','Limite de acompanhamento em uso: '+LIMITES.vagaAntigaDias+' dias (parâmetro operacional, não meta)',
-            kpiRow(['vagas_total','vagas_andamento','vagas_abertas','vagas_fechadas','vagas_canceladas','time_to_fill']))
+            kpiRow(['vagas_total','vagas_andamento','vagas_abertas','vagas_aprovacao','vagas_fechadas','vagas_canceladas','time_to_fill']))
       + sec('Natureza', null, kpiRow(['vagas_substituicao','vagas_aumento','remuneracao_media']))
       + sec('Evolução', null, '<div class="grid-2">'
           + bloco(chartBarGrupo(mesesFiltrados(),[{nome:'Vagas em andamento',vals:serie('vagas_andamento').vals},
@@ -3288,15 +3432,25 @@ function vagasEmAberto(){
 /* Três vagas mais antigas — leitura de 5 segundos para a diretoria. */
 function top3Vagas(){
   if(!temDados('vagas')) return bloco(vazio('Sem dados','Depende da base de R&S.'),'Vagas mais antigas','O que está travado há mais tempo?');
-  const v=flt(BASE.vagas).filter(x=>!/fechad|cancel/i.test(x.status||''))
-    .map(x=>({x,d:diasAberto(x)})).filter(o=>o.d!=null).sort((a,b)=>b.d-a.d).slice(0,3);
-  if(!v.length) return bloco(vazio('Nenhuma vaga em aberto',''),'Vagas mais antigas','O que está travado há mais tempo?');
-  const rows=v.map(o=>[esc(o.x.cargo),esc(o.x.departamento||'—'),esc(o.x.responsavel||'—'),
-    '<b style="color:'+(o.d>LIMITES.vagaAntigaDias?'var(--cr)':'var(--tx)')+'">'+o.d+'</b>',
-    esc(o.x.prioridade||'—'),esc(o.x.status||'—')]);
-  return bloco(tabela([{l:'Cargo'},{l:'Área'},{l:'Responsável'},{l:'Dias em aberto',num:1},{l:'Prioridade'},{l:'Status'}],rows)
+  /* Três mais antigas DE CADA UNIDADE: um gargalo na Fábrica não esconde o
+     gargalo do Comercial. */
+  const todas=flt(BASE.vagas).filter(x=>!/fechad|cancel/i.test(x.status||''))
+    .map(x=>({x,d:diasAberto(x)})).filter(o=>o.d!=null);
+  if(!todas.length) return bloco(vazio('Nenhuma vaga em aberto',''),'Vagas mais antigas','O que está travado há mais tempo?');
+  const rows=[];
+  valoresNoFiltro('unidade').forEach(u=>{
+    const top=todas.filter(o=>String(o.x.unidade)===String(u)).sort((a,b)=>b.d-a.d).slice(0,3);
+    if(!top.length) return;
+    rows.push(['<b>'+esc(u)+'</b>','','','','','']);
+    top.forEach(o=>rows.push([
+      '<span style="color:var(--tx-3)">└&nbsp;</span>'+esc(o.x.cargo),
+      esc(o.x.departamento||'—'), esc(o.x.responsavel||'—'),
+      '<b style="color:'+(o.d>LIMITES.vagaAntigaDias?'var(--cr)':'var(--tx)')+'">'+o.d+'</b>',
+      esc(o.x.prioridade||'—'), esc(o.x.status||'—')]));
+  });
+  return bloco(tabela([{l:'Unidade / Cargo'},{l:'Departamento'},{l:'Responsável'},{l:'Dias em aberto',num:1},{l:'Prioridade'},{l:'Status'}],rows)
     +'<div style="margin-top:10px"><button class="lnk" onclick="irPara(\'recrut\')">Ver todas as vagas em aberto ›</button></div>',
-    '3 vagas com maior tempo em aberto','O que está travado há mais tempo?');
+    '3 vagas mais antigas de cada unidade','O que está travado há mais tempo?');
 }
 /* Vagas por cargo — ranking horizontal, com opção de ver a lista completa. */
 function vagasPorCargo(){
@@ -3490,7 +3644,14 @@ function tags(){
   const at=camposDaPagina().filter(c=>F[c.k]).map(c=>'<span class="tag">'+esc(c.l)+': '+esc(c.tipo==='mes'?dBR(F[c.k]):F[c.k])+'</span>');
   document.getElementById('fTags').innerHTML = at.length?at.join(''):'<span style="font-size:11.5px;color:var(--tx-3)">Nenhum filtro aplicado — visão consolidada.</span>';
 }
-function toggleFiltros(){ const f=document.getElementById('filtros'); f.classList.toggle('open'); document.getElementById('btnF').classList.toggle('on'); }
+function toggleFiltros(){
+  const f=document.getElementById('filtros');
+  const abriu=!f.classList.contains('open');
+  f.classList.toggle('open'); document.getElementById('btnF').classList.toggle('on');
+  /* Abre onde o usuário estiver: a barra sobe para o topo da tela em vez de
+     ficar perdida no começo da página. */
+  document.getElementById('velaF').classList.toggle('on', abriu);
+}
 function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); }
 
 /* ==========================================================================
@@ -3565,18 +3726,52 @@ function render(){
   const html=p.render();
   document.getElementById('paginas').innerHTML='<div class="page active">'+html+'</div>';
   montarGraficos();
+  animarKPIs();
   if(ABERTO) { const k=document.querySelector('.kpi[data-ind="'+ABERTO+'"]');
     if(k){ const b=document.getElementById(k.closest('.kpis').dataset.dw);
-      if(b){ FILA=[]; b.innerHTML=detalheHTML(ABERTO, DRILL_DIM); b.classList.add('on'); k.classList.add('aberto');
+      if(b){ cancelarTimer(b); destruirGraficosDe(b); FILA=[];
+             b.dataset.selo=String(++SELO_DRILL); b.classList.remove('saindo');
+             b.innerHTML=detalheHTML(ABERTO, DRILL_DIM); b.classList.add('on'); k.classList.add('aberto');
              montarGraficos(); } } }
 }
 /* Instancia o que estiver pendente na fila. Precisa rodar também depois de
    montar o detalhamento: os gráficos de dentro dele entram na fila na hora em
    que o HTML é gerado, e sem esta chamada o canvas fica em branco. */
+/* Contagem progressiva do valor do card. Só anima quando o número mudou de
+   verdade: reaplicar um filtro que não altera o resultado não deve reiniciar
+   a animação, e o valor final é sempre o calculado, nunca o interpolado. */
+const ULTIMOS_VALORES_KPI=Object.create(null);
+function animarKPIs(){
+  const els=[...document.querySelectorAll('.kpi-num[data-value]')];
+  if(!els.length) return;
+  const reduz=semMovimento();
+  els.forEach(el=>{
+    const alvo=Number(el.dataset.value), id=el.dataset.indicator;
+    if(!Number.isFinite(alvo)) return;
+    const chave=ATUAL+'::'+id, anterior=ULTIMOS_VALORES_KPI[chave];
+    if(anterior!==undefined && Math.abs(anterior-alvo)<1e-9){ el.textContent=fmt(alvo,id); return; }
+    ULTIMOS_VALORES_KPI[chave]=alvo;
+    if(reduz){ el.textContent=fmt(alvo,id); return; }
+    const inicio=performance.now(), duracao=620;
+    const passo=agora=>{
+      const t=Math.min(1,(agora-inicio)/duracao);
+      el.textContent=fmt(alvo*(1-Math.pow(1-t,3)), id);
+      if(t<1 && el.isConnected) requestAnimationFrame(passo);
+      else if(el.isConnected) el.textContent=fmt(alvo,id);
+    };
+    el.textContent=fmt(0,id);
+    requestAnimationFrame(passo);
+  });
+}
 function montarGraficos(){
   FILA.forEach(f=>{
     const el=document.getElementById(f.cid);
     if(!el) return;
+    /* Garante a entrada sequencial em todo gráfico, inclusive os construtores
+       que montam as opções por conta própria. */
+    if(!semMovimento() && f.cfg && f.cfg.options && !f.cfg.options.animation)
+      f.cfg.options.animation = ANIM_SEQ.animation;
+    if(semMovimento() && f.cfg && f.cfg.options) f.cfg.options.animation = false;
     if(CHARTS[f.cid]){ try{ CHARTS[f.cid].destroy(); }catch(e){} delete CHARTS[f.cid]; }
     CHARTS[f.cid]=new Chart(el.getContext('2d'), f.cfg);
   });
