@@ -2047,6 +2047,12 @@ function verTodos(b){
   box.dataset.todos='1';
   const ev=new CustomEvent('verTodos'); render();
 }
+/* Insere o rodapé no fechamento da tabela EXTERNA. Usar replace simples pegava
+   a primeira ocorrência, que pode ser de uma tabela aninhada numa linha. */
+function rodape(t, html){
+  t=t||''; const alvo='</tbody></table>'; const i=t.lastIndexOf(alvo);
+  return i<0 ? t : t.slice(0,i)+'</tbody>'+html+'</table>'+t.slice(i+alvo.length);
+}
 function tabela(cols, rows){
   if(!rows||!rows.length) return '';   // sem linhas: string vazia, nunca null
   let h='<div class="tbl-wrap"><table class="t"><thead><tr>';
@@ -2318,7 +2324,7 @@ function resumoPorColaborador(soAfastamento, id){
   });
   let t=tabela([{l:'Colaborador'},{l:'Departamento'},{l:'Unidade'},
     {l:soAfastamento?'Afastamentos':'Atestados',num:1},{l:'Dias',num:1},{l:'Período'},{l:'Reincidência de motivo'}], rows);
-  t=(t||'').replace('</tbody></table>','</tbody><tfoot><tr><td>'+ks.length+' colaborador(es)</td><td></td><td></td>'
+  t=rodape(t,'<tfoot><tr><td>'+ks.length+' colaborador(es)</td><td></td><td></td>'
     +'<td class="num">'+nf(a.length,0)+'</td><td class="num">'
     +nf(a.reduce((t,r)=>t+diasNoPeriodo(r,(F.ini&&F.fim&&F.ini===F.fim)?F.ini:null),0),1)
     +'</td><td></td><td></td></tr></tfoot></table>');
@@ -2386,8 +2392,8 @@ function pessoasAtestado(soAfastamento, id){
   const nRein=Object.keys(rein).length;
   let t=tabela(cols, rows);
   const colsVazias=CFG.exibeCIDIndividual?'<td></td><td></td>':'<td></td>';
-  t=(t||'').replace('</tbody></table>','</tbody><tfoot><tr><td>'+pessoas.length+' colaborador(es)</td><td></td><td></td>'
-    +'<td class="num">'+nf(a.length,0)+' atestado(s)</td><td></td><td class="num">'+nf(totD,1)+'</td>'+colsVazias+'</tr></tfoot></table>');
+  t=rodape(t,'<tfoot><tr><td>'+pessoas.length+' colaborador(es)</td><td></td><td></td>'
+    +'<td class="num">'+nf(a.length,0)+' atestado(s)</td><td></td><td class="num">'+nf(totD,1)+'</td>'+colsVazias+'</tr></tfoot>');
   const per=mesesFiltrados();
   const avisos='<div style="margin-top:12px;font-size:11px;color:var(--tx-3);line-height:1.5">'
     +'Período exibido: '+(per.length? dBR(per[0])+(per.length>1?' a '+dBR(per[per.length-1]):'') :'—')+'. '
@@ -2440,7 +2446,7 @@ function pessoasAfastadasAcidente(id){
     'Há '+a.length+' acidente(s) com afastamento no recorte, mas nenhum traz o nome ou a matrícula. Preencha a coluna "matricula" (ou "colaborador") na aba Acidentes do arquivo do SESMT.');
   const totD=ks.reduce((t,k)=>t+g[k].d,0);
   let t=tabela(cols, rows);
-  t=(t||'').replace('</tbody></table>','</tbody><tfoot><tr><td>'+ks.length+' colaborador(es)</td><td></td><td></td><td></td>'
+  t=rodape(t,'<tfoot><tr><td>'+ks.length+' colaborador(es)</td><td></td><td></td><td></td>'
     +'<td class="num">'+nf(a.length,0)+'</td><td class="num">'+nf(totD,0)+'</td><td></td></tr></tfoot></table>');
   const avisos='<div style="margin-top:12px;font-size:11px;color:var(--tx-3);line-height:1.5">'
     +'Esta tabela contém dado pessoal associado a um acidente de trabalho — o acesso deve ser restrito a RH, DP e SESMT, conforme a política de dados sensíveis da empresa.'
@@ -2665,10 +2671,7 @@ function tabelaUnidadeDep(h, q, ids, rotDim){
     F.unidade=o1;
   });
   if(!rows.length) return bloco(vazio('Sem dados','Sem registros no recorte atual.'), h, q);
-  let t=tabela([{l:rotDim||'Unidade / Departamento'}].concat(ids.map(x=>({l:DICIONARIO[x].nome,num:1}))), rows);
-  const tot=ids.map(x=>calc(x));
-  t=(t||'').replace('</tbody></table>','</tbody><tfoot><tr><td>Total consolidado</td>'
-    +tot.map((v,i)=>'<td class="num">'+(v==null?'—':fmt(v,ids[i]))+'</td>').join('')+'</tr></tfoot></table>');
+  const t=tabela([{l:rotDim||'Unidade / Departamento'}].concat(ids.map(x=>({l:DICIONARIO[x].nome,num:1}))), rows);
   return bloco(t, h, q, '<span style="font-size:11px;color:var(--tx-3)">clique na unidade para abrir os departamentos</span>');
 }
 /* Lista das vagas do departamento, embutida como uma linha da própria tabela,
@@ -2720,11 +2723,7 @@ function tabelaHier(ids, idCard){
     linha.__embutido = sel ? subLinhaVagas(idCard, l.nome, ids.length+1) : null;
     return linha;
   });
-  let t=tabela([{l:'Unidade / Departamento'}].concat(ids.map(x=>({l:DICIONARIO[x].nome,num:1}))), rows);
-  const tot=ids.map(x=>calc(x));
-  t=(t||'').replace('</tbody></table>','</tbody><tfoot><tr><td>Total consolidado</td>'
-    +tot.map((v,i)=>'<td class="num">'+(v==null?'—':fmt(v,ids[i]))+'</td>').join('')+'</tr></tfoot></table>');
-  return t;
+  return tabela([{l:'Unidade / Departamento'}].concat(ids.map(x=>({l:DICIONARIO[x].nome,num:1}))), rows);
 }
 /* Clicar num departameto desce fixando também a unidade a que ele pertence. */
 function descerDep(dep){
@@ -2778,7 +2777,7 @@ function tabelaMensalPar(id){
   let t=tabela(cols, rows);
   const rod=[]; ms.forEach(m=>par.forEach(k=>{ const v=calc(k,m); rod.push(v==null?'—':fmt(v,k)); }));
   const tt=calc(id);
-  t=(t||'').replace('</tbody></table>','</tbody><tfoot><tr><td>Total da empresa</td>'
+  t=rodape(t,'<tfoot><tr><td>Total da empresa</td>'
     +rod.map(v=>'<td class="num">'+v+'</td>').join('')
     +'<td class="num">'+(tt==null?'—':fmt(tt,id))+'</td></tr></tfoot></table>');
   return t;
@@ -2913,7 +2912,7 @@ function tabelaMensal(id, rot){
   });
   const tot=ms.map(m=>calc(id,m)), ft=fecha(tot);
   let t=tabela(cols, rows);
-  t=(t||'').replace('</tbody></table>','</tbody><tfoot><tr><td>Total da empresa</td>'
+  t=rodape(t,'<tfoot><tr><td>Total da empresa</td>'
     + tot.map(v=>'<td class="num">'+(v==null?'—':fmt(v,id))+'</td>').join('')
     + '<td class="num">'+(ft==null?'—':fmt(ft,id))+'</td></tr></tfoot></table>');
   return t;
@@ -2933,7 +2932,7 @@ function tabelaTurnoverMes(){
   });
   const tot=ms.map(m=>calc('turnover',m)), tv=tot.filter(v=>v!=null);
   let t=tabela(cols, rows);
-  t=(t||'').replace('</tbody></table>','</tbody><tfoot><tr><td>Total da empresa</td>'
+  t=rodape(t,'<tfoot><tr><td>Total da empresa</td>'
     + tot.map(v=>'<td class="num">'+(v==null?'—':fmt(v,'turnover'))+'</td>').join('')
     + '<td class="num">'+(tv.length?fmt(tv.reduce((a,b)=>a+b,0)/tv.length,'turnover'):'—')+'</td></tr></tfoot></table>');
   return t;
@@ -2956,7 +2955,7 @@ function tabelaTurnoverTipo(id){
   const rows=linhas.map(l=>[ (l.nivel? '<span style="color:var(--tx-3)">└ </span>':'<b>')+esc(l.nome)+(l.nivel?'':'</b>'),
     l.v==null?null:fmt(l.v,id) ]);
   let t=tabela([{l:'Unidade / Departamento'},{l:DICIONARIO[id].nome,num:1}], rows);
-  t=(t||'').replace('</tbody></table>','</tbody><tfoot><tr><td>Consolidado</td><td class="num">'
+  t=rodape(t,'<tfoot><tr><td>Consolidado</td><td class="num">'
     +(calc(id)==null?'—':fmt(calc(id),id))+'</td></tr></tfoot></table>');
   return t;
 }
@@ -3117,7 +3116,7 @@ function listaAtestados(id){
   let t=tabela([{l:'Colaborador'},{l:'Departamento'},{l:'Início'},{l:'Fim'},{l:'Prazo (dias)',num:1},
     {l:'Motivo'},{l:'Tipo'}], rows);
   const tot=rows.reduce((x,r)=>x+Number(String(r[4]).replace('.','').replace(',','.')||0),0);
-  t=(t||'').replace('</tbody></table>','</tbody><tfoot><tr><td colspan="4">'+rows.length
+  t=rodape(t,'<tfoot><tr><td colspan="4">'+rows.length
     +' registro(s)</td><td class="num">'+nf(tot,1)+'</td><td colspan="2"></td></tr></tfoot></table>');
   return t + '<div style="margin-top:10px;font-size:11px;color:var(--tx-3)">'
     + (lanc ? 'Atestados cuja data de início cai no período.'
@@ -3176,8 +3175,8 @@ function detalheHTML(id, dim){
     ].concat(r.cells.map((c,i)=>c==null?null:fmt(c,ids[i]))));
     let t=tabela([{l:ehVaga?'QTD POR UNIDADE':(DIM_ROT[dim]||dim)}].concat(ids.map(x=>({l:DICIONARIO[x].nome,num:1}))), linhas);
     const tot=ids.map(x=>calc(x));
-    t=(t||'').replace('</tbody></table>','</tbody><tfoot><tr><td>Total / consolidado</td>'
-      +tot.map((v,i)=>'<td class="num">'+(v==null?'—':fmt(v,ids[i]))+'</td>').join('')+'</tr></tfoot></table>');
+    t=rodape(t,'<tfoot><tr><td>Total / consolidado</td>'
+      +tot.map((v,i)=>'<td class="num">'+(v==null?'—':fmt(v,ids[i]))+'</td>').join('')+'</tr></tfoot>');
     corpo=t;
   }
   let nominal='';
