@@ -263,6 +263,124 @@ table.t td.num,table.t th.num{text-align:center;font-variant-numeric:tabular-num
   .page{display:block!important;page-break-after:always}
   .box,.kpi{box-shadow:none}
 }
+
+/* ==========================================================================
+   CAMADA DE APRESENTAÇÃO — reformulação visual
+   Só estilo: nenhuma classe, id, função ou cálculo foi renomeado. Fica no fim
+   da folha para que estas regras prevaleçam sobre as anteriores.
+   ========================================================================== */
+:root{
+  --r:10px; --r-sm:7px; --gap:18px;
+  --sh-1:0 1px 2px rgba(22,33,58,.05);
+  --sh-2:0 4px 16px rgba(22,33,58,.09);
+  --sh-3:0 10px 30px rgba(22,33,58,.13);
+  --grade:#EEF1F6;
+}
+/* --- Seções: título com marcador, para separar blocos sem pesar --- */
+.sec{margin-bottom:30px}
+.sec-h{margin-bottom:13px;padding-bottom:9px;border-bottom:1px solid var(--line);align-items:baseline}
+.sec-h h2{font-size:12.5px;letter-spacing:1.1px;color:var(--tx);position:relative;padding-left:11px}
+.sec-h h2::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:3px;height:13px;border-radius:2px;background:var(--c1)}
+.sec-h .hint{font-size:11px;color:var(--tx-3)}
+
+/* --- KPI: número grande, rótulo claro, apoio discreto --- */
+.kpis{grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:var(--gap)}
+.kpi{padding:15px 17px 30px;border-radius:var(--r);border-top-width:0;box-shadow:var(--sh-1);
+  transition:box-shadow .16s,transform .16s,border-color .16s;overflow:hidden}
+.kpi::before{content:'';position:absolute;left:0;right:0;top:0;height:3px;background:var(--nd)}
+.kpi.s-ok::before{background:var(--ok)} .kpi.s-at::before{background:var(--at)}
+.kpi.s-cr::before{background:var(--cr)} .kpi.s-nd::before{background:var(--nd)}
+.kpi.parcial::before{background:repeating-linear-gradient(90deg,var(--at) 0 6px,transparent 6px 11px)}
+.kpi:hover{box-shadow:var(--sh-2);transform:translateY(-2px)}
+.kpi.aberto{box-shadow:var(--sh-2);border-color:var(--c1)}
+.kpi-l{font-size:11px;letter-spacing:.5px;color:var(--tx-2);min-height:28px}
+.kpi-v{font-size:31px;font-weight:800;letter-spacing:-.8px;margin:8px 0 3px;line-height:1.05}
+.kpi-v.nd{font-size:14.5px;font-weight:600}
+.kpi-f{font-size:11.5px;color:var(--tx-3)}
+.kpi-badge{margin:7px 0 2px}
+.kpi .lupa{bottom:11px;right:13px;font-size:10px;opacity:.75}
+.kpi:hover .lupa{opacity:1;color:var(--c1)}
+.chip{border-radius:5px;padding:2px 8px;font-size:10.5px;letter-spacing:.2px}
+.bul{margin-top:11px}
+.bul-bar{height:6px;background:var(--grade);border-radius:5px}
+.bul-bar i{border-radius:5px}
+.bul-l{font-size:10px;margin-top:6px}
+
+/* --- Blocos de gráfico e tabela: respiro e cabeçalho com hierarquia --- */
+.box{border-radius:var(--r);padding:17px 19px 19px;box-shadow:var(--sh-1)}
+.box-h{margin-bottom:14px;padding-bottom:11px;border-bottom:1px solid var(--grade)}
+.box-h h3{font-size:14px;letter-spacing:.1px}
+.box-h .q{font-size:11px;color:var(--tx-3);margin-top:3px}
+.chart{height:360px}
+.chart.sm{height:300px}
+.grid-2{grid-template-columns:repeat(auto-fit,minmax(440px,1fr))}
+.grid-3{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+
+/* --- Tabelas: cabeçalho fixo, zebra leve, números alinhados --- */
+.tbl-wrap{max-height:none;border-radius:var(--r-sm);border:1px solid var(--grade)}
+table.t{font-size:12.5px}
+table.t thead th{background:#F7F9FC;border-bottom:1px solid var(--line);padding:11px 14px;
+  font-size:10.5px;letter-spacing:.7px;color:var(--tx-2);position:sticky;top:0;z-index:2}
+table.t tbody td{padding:11px 14px;border-bottom:1px solid var(--grade)}
+table.t tbody tr:nth-child(even):not(.emb){background:#FCFDFE}
+table.t tbody tr:hover:not(.emb){background:#F4F8FE}
+table.t tbody tr:last-child td{border-bottom:0}
+table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums}
+table.t tfoot td{background:#F7F9FC;border-top:1px solid var(--line);font-size:12px}
+/* Três primeiros de um ranking, com destaque discreto */
+table.t tbody tr:nth-child(1) td:first-child{box-shadow:inset 3px 0 0 var(--c1)}
+table.t tbody tr:nth-child(2) td:first-child{box-shadow:inset 3px 0 0 #93AFD8}
+table.t tbody tr:nth-child(3) td:first-child{box-shadow:inset 3px 0 0 #C3D1E6}
+
+/* --- Pontos de atenção: etiqueta de gravidade e número em evidência --- */
+.p-resumo{gap:12px;margin-bottom:16px}
+.p-chip{border-radius:var(--r-sm);padding:11px 16px;box-shadow:var(--sh-1);border-left-width:4px}
+.p-chip b{font-size:24px}
+.p-grade{grid-template-columns:repeat(auto-fill,minmax(440px,1fr));gap:12px}
+.prio{border-radius:var(--r);padding:15px 17px 15px 20px;box-shadow:var(--sh-1);background:#fff}
+.prio:hover{box-shadow:var(--sh-2);transform:translateY(-2px)}
+.p-faixa{width:4px}
+.p-num{font-size:27px;min-width:100px}
+.prio .p-t{font-size:13.5px}
+.prio .p-d{font-size:11.5px}
+.prio .p-m{font-size:10.5px;margin-top:5px}
+
+/* --- Detalhamento: extensão do painel, não outra tela --- */
+.drill{border:1px solid var(--line);border-top:3px solid var(--c1);border-radius:var(--r);
+  padding:18px 20px;box-shadow:var(--sh-2);background:#fff}
+.drill-h{margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--grade)}
+.drill-h h4{font-size:14.5px}
+.drill-h .sub{font-size:11px}
+.drill .fechar{border:1px solid var(--line);border-radius:6px;width:26px;height:26px;
+  display:flex;align-items:center;justify-content:center;font-size:13px;background:#fff}
+.drill .fechar:hover{border-color:var(--cr);color:var(--cr)}
+.trilha{background:#F7F9FC;border:1px solid var(--grade);border-radius:var(--r-sm);
+  padding:7px 11px;font-size:11px;margin-bottom:12px}
+
+/* --- Controles: segmentado e links --- */
+.modo{border-radius:7px;box-shadow:var(--sh-1)}
+.modo button{padding:6px 15px;font-size:11.5px;letter-spacing:.3px}
+.dims button{border-radius:7px;font-size:11px;padding:5px 12px}
+.lnk{text-decoration:none;border-bottom:1px solid transparent}
+.lnk:hover{border-bottom-color:var(--c1)}
+.empty{border-radius:var(--r-sm);padding:30px 20px;background:#FAFBFD}
+
+/* --- Filtros: painel de trabalho, não barra de formulário --- */
+.filters.flutua.open{border-radius:var(--r);box-shadow:var(--sh-3);padding:20px 22px}
+.f-item label{font-size:10px;letter-spacing:.7px;color:var(--tx-2)}
+.f-item select,.f-item input{border-radius:7px;font-size:12.5px;padding:7px 10px}
+.f-tags .tag{border-radius:20px;font-size:10.5px;padding:3px 11px}
+
+/* --- Responsivo --- */
+@media(max-width:1180px){ .grid-2,.p-grade{grid-template-columns:1fr} }
+@media(max-width:860px){
+  .kpis{grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:12px}
+  .kpi-v{font-size:26px} .chart{height:300px}
+  .box{padding:14px 15px} .drill{padding:15px 16px}
+  .p-num{min-width:0;font-size:23px}
+}
+
 </style>
 </head>
 <body>
@@ -1801,14 +1919,22 @@ const ANIM_SEQ = {
 };
 function opts(fmtId, legenda, extra){
   const o={responsive:true,maintainAspectRatio:false,animation:false,interaction:{mode:'index',intersect:false},
-    layout:{padding:{top:26,right:8}},
-    plugins:{legend:{display:!!legenda,position:'top',align:'start',labels:{usePointStyle:true,boxWidth:8,padding:14,font:{size:11}}},
+    layout:{padding:{top:28,right:14,bottom:2,left:2}},
+    plugins:{legend:{display:!!legenda,position:'top',align:'start',
+        labels:{usePointStyle:true,pointStyle:'circle',boxWidth:7,boxHeight:7,padding:16,
+          font:{size:11,weight:'600'},color:'#66748C'}},
       rotulos:{fmt:v=>fmtId?fmt(v,fmtId):nf(v, Math.abs(v)<10 && v%1 ? 1 : 0)},
-      tooltip:{callbacks:{title:it=>it.map(i=>i.label).join(' · '),
+      tooltip:{backgroundColor:'rgba(22,33,58,.94)',padding:11,cornerRadius:7,titleFont:{size:11.5},
+        bodyFont:{size:12},bodySpacing:5,displayColors:true,boxPadding:4,
+        callbacks:{title:it=>it.map(i=>i.label).join(' · '),
         label:c=>c.dataset.label+': '+(fmtId?fmt(c.parsed.y!=null?c.parsed.y:c.parsed.x,fmtId):nf(c.parsed.y,1))}}},
-    scales:{x:{grid:{display:false},ticks:{font:{size:10},maxRotation:45,minRotation:0,autoSkip:false,
+    scales:{x:{grid:{display:false},border:{color:'#E3E8EF'},
+        ticks:{font:{size:10.5},color:'#66748C',maxRotation:45,minRotation:0,autoSkip:false,padding:5,
         callback:function(v){return cortaRot(this.getLabelForValue(v))}}},
-      y:{beginAtZero:true,grid:{color:'#EEF1F6'},ticks:{font:{size:10},callback:v=>fmtId?fmt(v,fmtId):v}}}};
+      y:{beginAtZero:true,border:{display:false},
+        grid:{color:'#EEF1F6',drawTicks:false},
+        ticks:{font:{size:10.5},color:'#98A3B5',padding:8,maxTicksLimit:6,
+        callback:v=>fmtId?fmt(v,fmtId):v}}}};
   return Object.assign(o, extra||{});
 }
 
